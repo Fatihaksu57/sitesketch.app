@@ -1864,7 +1864,7 @@ idoc.open(); idoc.write(this._anleitungHTML()); idoc.close();
         } else {
 // Desktop: PDF direkt einbetten
 const embed = document.createElement('iframe');
-embed.src = 'SiteSketch_Arbeitsanweisung.pdf';
+embed.src = 'pdf/SiteSketch_Arbeitsanweisung.pdf';
 embed.style.cssText = 'width:100%;height:100%;border:none;';
 content.appendChild(embed);
 overlay.appendChild(toolbar);
