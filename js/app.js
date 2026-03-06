@@ -1871,6 +1871,14 @@ iframe.contentWindow.print();
     }
 
     showAnleitung() {
+        const pdfUrl = 'pdf/SiteSketch_Arbeitsanweisung.pdf';
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        // iOS Safari kann keine PDFs im iframe anzeigen — direkt öffnen
+        if (isIOS) {
+            window.open(pdfUrl, '_blank');
+            return;
+        }
+        // Desktop: PDF im Overlay einbetten
         const existing = document.getElementById('pdfOverlay');
         if (existing) existing.remove();
         const overlay = document.createElement('div');
@@ -1880,33 +1888,15 @@ iframe.contentWindow.print();
         toolbar.style.cssText = 'display:flex;gap:10px;padding:12px 16px;background:#003C71;align-items:center;flex-shrink:0;padding-top:calc(12px + env(safe-area-inset-top));';
         toolbar.innerHTML = `
 <button onclick="app.closePdfOverlay()" style="background:#fff;color:#003C71;border:none;padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ed6d0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Zurück</button>
-<span style="flex:1;color:#fff;font-weight:600;font-size:14px;text-align:center;">SiteSketch – Arbeitsanweisung</span>
-<a href="pdf/SiteSketch_Arbeitsanweisung.pdf" download="SiteSketch_Arbeitsanweisung.pdf" style="background:#ed6d0f;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF</a>
+<span style="flex:1;color:#fff;font-weight:600;font-size:14px;text-align:center;">Arbeitsanweisung</span>
+<a href="${pdfUrl}" download="SiteSketch_Arbeitsanweisung.pdf" style="background:#ed6d0f;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF</a>
 `;
-        const content = document.createElement('div');
-        content.style.cssText = 'flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f2f2f7;';
-        // Versuche PDF einzubetten, Fallback auf HTML-Anleitung
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        if (isIOS) {
-// iOS kann kein PDF inline anzeigen — zeige die HTML-Version
-const iframe = document.createElement('iframe');
-iframe.style.cssText = 'width:100%;height:100%;border:none;';
-content.appendChild(iframe);
-overlay.appendChild(toolbar);
-overlay.appendChild(content);
-document.body.appendChild(overlay);
-const idoc = iframe.contentDocument || iframe.contentWindow.document;
-idoc.open(); idoc.write(this._anleitungHTML()); idoc.close();
-        } else {
-// Desktop: PDF direkt einbetten
-const embed = document.createElement('iframe');
-embed.src = 'pdf/SiteSketch_Arbeitsanweisung.pdf';
-embed.style.cssText = 'width:100%;height:100%;border:none;';
-content.appendChild(embed);
-overlay.appendChild(toolbar);
-overlay.appendChild(content);
-document.body.appendChild(overlay);
-        }
+        const embed = document.createElement('iframe');
+        embed.src = pdfUrl;
+        embed.style.cssText = 'flex:1;border:none;width:100%;';
+        overlay.appendChild(toolbar);
+        overlay.appendChild(embed);
+        document.body.appendChild(overlay);
     }
 
     _anleitungHTML() {
