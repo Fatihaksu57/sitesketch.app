@@ -57,6 +57,7 @@
                 <span class="header-title" id="headerTitle"></span>
             </div>
             <div class="header-actions" id="headerActions"></div>
+            <button class="btn btn-secondary" onclick="app.toggleDarkTheme()" id="darkThemeBtn" style="padding:4px 8px;min-height:28px;border-radius:6px;flex-shrink:0;font-size:14px" title="Dark/Light Theme">☀️</button>
             <button class="btn btn-secondary" onclick="app.logout()" style="padding:4px 8px;font-size:11px;min-height:28px;border-radius:6px;flex-shrink:0" title="Abmelden"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
             <img id="headerQfmLogo" src="assets/qfm-logo.png" style="height:28px;flex-shrink:0" alt="QFM">
         </header>
@@ -65,18 +66,41 @@
                 <div class="search-bar">
                     <input type="text" class="search-input" placeholder="Projekte durchsuchen..." id="searchInput"
                         oninput="app.filterProjects()">
-                    <select class="filter-select" id="statusFilter" onchange="app.filterProjects()">
+                    <select class="filter-select" id="statusFilter" onchange="app.filterProjects()" style="display:none">
                         <option value="">Alle Status</option>
                         <option value="offen">Offen</option>
                         <option value="in-arbeit">In Arbeit</option>
                         <option value="abgeschlossen">Abgeschlossen</option>
                     </select>
-                    <select class="filter-select" id="auftraggeberFilter" onchange="app.filterProjects()">
+                    <select class="filter-select" id="auftraggeberFilter" onchange="app.filterProjects()" style="display:none">
                         <option value="">Alle Auftraggeber</option>
                         <option value="1&1 Versatel">1&1 Versatel</option>
                         <option value="Vodafone">Vodafone</option>
                     </select>
-                    <button class="btn btn-primary" onclick="app.showCreateProject()">+ Neues Projekt</button>
+                    <button class="btn btn-secondary" onclick="app.toggleFilterPanel()" style="padding:8px 12px;position:relative" id="filterBtn" title="Filter"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ed6d0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg><span id="filterBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ed6d0f;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;font-weight:700;line-height:16px;text-align:center">!</span></button>
+                    <div id="filterPanel" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-card);border-radius:0 0 12px 12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:14px 16px;z-index:100;margin-top:4px">
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+                            <div style="flex:1;min-width:120px">
+                                <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Status</label>
+                                <select class="filter-select" id="statusFilterVisible" onchange="document.getElementById('statusFilter').value=this.value;app.filterProjects();app.updateFilterBadge()" style="width:100%;margin-top:4px">
+                                    <option value="">Alle</option>
+                                    <option value="offen">Offen</option>
+                                    <option value="in-arbeit">In Arbeit</option>
+                                    <option value="abgeschlossen">Abgeschlossen</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;min-width:120px">
+                                <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Auftraggeber</label>
+                                <select class="filter-select" id="auftraggeberFilterVisible" onchange="document.getElementById('auftraggeberFilter').value=this.value;app.filterProjects();app.updateFilterBadge()" style="width:100%;margin-top:4px">
+                                    <option value="">Alle</option>
+                                    <option value="1&1 Versatel">1&1 Versatel</option>
+                                    <option value="Vodafone">Vodafone</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-sm" onclick="document.getElementById('statusFilterVisible').value='';document.getElementById('auftraggeberFilterVisible').value='';document.getElementById('statusFilter').value='';document.getElementById('auftraggeberFilter').value='';app.filterProjects();app.updateFilterBadge()" style="padding:6px 10px;color:var(--ios-red);background:none;border:none;font-size:12px;font-weight:600;margin-top:14px">Zurücksetzen</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.showCreateProject()" style="width:44px;height:44px;padding:0;border-radius:50%;font-size:24px;flex-shrink:0" title="Neues Projekt">+</button>
                     <button class="btn btn-secondary" onclick="app.syncFromCloud()" style="padding:8px 12px" title="Cloud Sync"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ed6d0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Cloud Sync</button>
                     <button class="btn btn-secondary" onclick="document.getElementById('jsonImportInput').click()" style="padding:8px 12px"><svg
                             xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
